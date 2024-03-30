@@ -116,6 +116,12 @@ in
             "out"
           ];
 
+          prePatch =
+            ''
+              cp -prf "$PWD" "$PWD.orig"
+            ''
+          ;
+
           postPatch =
             ''
               echo ":: Dropping EXTRAVERSION from Makefile"
@@ -129,6 +135,19 @@ in
                 --replace "@boardIdentifier@" "${boardIdentifier}"
             '')
             + postPatch
+            # We're making the build diff before patching shebangs so Nix
+            # store paths don't leak into the output.
+            # It's also an implementation detail.
+            + ''
+              (
+              echo ":: Snapshotting build diff"
+              set -x
+              # Clear up any garbage left behind while patching
+              find . -name '*.orig' -delete
+              # `diff` exits 1 if there's differences...
+              diff --new-file --recursive --unified "$PWD.orig/" "$PWD/" > ../build.diff || :
+              )
+            ''
             + ''
               (
               echo ":: Patching shebangs to Nix store paths"
@@ -145,6 +164,7 @@ in
             buildPackages.bc
             buildPackages.bison
             buildPackages.dtc
+            buildPackages.findutils
             buildPackages.flex
             buildPackages.openssl
             buildPackages.swig
@@ -210,6 +230,11 @@ in
             cp -v .config $out/config/$variant.config
             cp -v defconfig $out/config/$variant.newdefconfig
             cp -v "configs/${defconfig}" $out/config/$variant.defconfig
+
+            echo ":: Copying build diff"
+
+            mkdir -vp $out/diff
+            cp -v "../build.diff" $out/diff/$variant.build.diff
 
             echo ":: Copying output binaries"
             mkdir -p $out/binaries
