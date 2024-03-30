@@ -75,6 +75,7 @@ in
           "2023.01" = "sha256-aUI7rTgPiaCRZjbonm3L0uRRLVhDCNki0QOdHkMxlQ8=";
           "2023.04" = "sha256-4xyskVRf9BtxzsXYwir9aVZFzW4qRCzNrKzWBTQGk0E=";
           "2023.07" = "sha256-EukhtGaucxzbw1Xmgyt/IryQsBrs7vmIb5iquns5QwA=";
+          "2023.10" = "sha256-4A5sbwFOBGEBc50I0G8yiBHOvPWuEBNI9AnLvVXOaQA=";
         };
         Tow-Boot = {
           "tb-2023.07-007" = "sha256-qEVvvnKy3fdFmU7Qn1U2PMqhf8p228v6+4XtkVGgQgk=";
