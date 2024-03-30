@@ -200,11 +200,21 @@ in
 
           installPhase = ''
             runHook preInstall
-            mkdir -p $out
-            mkdir -p $out/config
-            cp .config $out/config/$variant.config
+
+            mkdir -vp $out
+            mkdir -vp $out/config
+
+            echo ":: Copying config files"
+            make $makeFlags "''${makeFlagsArray[@]}" savedefconfig
+
+            cp -v .config $out/config/$variant.config
+            cp -v defconfig $out/config/$variant.newdefconfig
+            cp -v "configs/${defconfig}" $out/config/$variant.defconfig
+
+            echo ":: Copying output binaries"
             mkdir -p $out/binaries
             ${installPhase}
+
             if test -e $out/binaries; then
               (
               echo ":: Adding uSWID data"
