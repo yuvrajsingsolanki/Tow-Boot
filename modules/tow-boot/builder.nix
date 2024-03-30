@@ -116,45 +116,27 @@ in
             "out"
           ];
 
-          postPatch = ''
-            patchShebangs scripts
-            patchShebangs tools
-            patchShebangs arch/arm/mach-rockchip
-          '' +
-          ''
-            # Drop that from the exposed version, always.
-            # We use releases, any extra qualifier is owned by us.
-            sed -i -e 's/^EXTRAVERSION =.*/EXTRAVERSION =/' Makefile
-          '' +
-            # FIXME: review how we patch this out... (I don't like it)
-          ''
-            echo ':: Patching baud rate'
-            (PS4=" $ "
-            for f in configs/*rk3399* configs/*rk3328*; do
-              (set -x
-              sed -i -e 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' "$f"
+          postPatch =
+            ''
+              echo ":: Dropping EXTRAVERSION from Makefile"
+              # Drop that from the exposed version, always.
+              # We use releases, any extra qualifier is owned by us.
+              sed -i -e 's/^EXTRAVERSION =.*/EXTRAVERSION =/' Makefile
+            ''
+            + (lib.optionalString (!buildUBoot) ''
+              echo ":: Sneaking in boardIdentifier in the Tow-Boot environment"
+              substituteInPlace include/tow-boot_env.h \
+                --replace "@boardIdentifier@" "${boardIdentifier}"
+            '')
+            + postPatch
+            + ''
+              (
+              echo ":: Patching shebangs to Nix store paths"
+              patchShebangs scripts
+              patchShebangs tools
+              patchShebangs arch/arm/mach-rockchip
               )
-            done
-            for f in arch/arm/dts/*rk3399*.dts* arch/arm/dts/*rk3328*.dts*; do
-              (set -x
-              sed -i -e 's/serial2:1500000n8/serial2:115200n8/' "$f"
-              )
-            done
-            )
-            echo ':: Patching Rockchip SPI SPL offset'
-            (PS4=" $ "
-            for f in arch/arm/dts/*rk3399*.dts*; do
-              (set -x
-              sed -i -e 's/u-boot,spl-payload-offset\s*=\s*<0x60000>/u-boot,spl-payload-offset = <0x80000>/' "$f"
-              )
-            done
-            )
-          ''
-          + (lib.optionalString (!buildUBoot) ''
-            substituteInPlace include/tow-boot_env.h \
-              --replace "@boardIdentifier@" "${boardIdentifier}"
-          '')
-          + postPatch
+            ''
           ;
 
           buildInputs = buildInputs;
