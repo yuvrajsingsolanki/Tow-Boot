@@ -92,6 +92,7 @@ in
         runCommand "${config.Tow-Boot.outputName}.${config.device.identifier}.${config.build.default.version}" {
           inherit (firmware) version;
         } ''
+          (PS4=" $ "; set -x
           mkdir -p $out/{binaries,config,diff}
           cp -rt $out/binaries/ ${firmware}/binaries/*
           cp -rt $out/config/ ${firmware}/config/*
@@ -109,6 +110,7 @@ in
             cp -rt $out/diff/ ${firmwareSPI}/diff/*
             cp ${spiInstallerImage} $out/spi.installer.img
           ''}
+          )
         ''
       ) {
         firmware = config.Tow-Boot.outputs.firmware;
