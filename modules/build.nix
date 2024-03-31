@@ -89,7 +89,7 @@ in
         let
           inherit (lib) optionalString;
         in
-        runCommand "Tow-Boot.${config.device.identifier}.${config.build.default.version}" {
+        runCommand "${config.Tow-Boot.outputName}.${config.device.identifier}.${config.build.default.version}" {
           inherit (firmware) version;
         } ''
           mkdir -p $out/{binaries,config,diff}
