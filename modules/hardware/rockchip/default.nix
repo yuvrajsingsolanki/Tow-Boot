@@ -14,6 +14,7 @@ let
   ;
   inherit (config.Tow-Boot)
     variant
+    uBootVersion
   ;
   cfg = config.hardware.socs;
   withSPI = config.hardware.SPISize != null;
@@ -52,8 +53,12 @@ in
             # SPI boot Support
             MTD = yes;
             DM_MTD = yes;
+            ROCKCHIP_SPI_IMAGE = mkIf (versionAtLeast uBootVersion "2022.10") yes;
             SPI_FLASH_SFDP_SUPPORT = yes;
             SPL_DM_SPI = yes;
+            SPL_SPI_FLASH_SUPPORT = yes;
+            SPL_SPI_LOAD = yes;
+            SPL_SPI = yes;
             SPL_SPI_FLASH_TINY = no;
             SPL_SPI_FLASH_SFDP_SUPPORT = yes;
             # NOTE: Some boards may have a different value:
