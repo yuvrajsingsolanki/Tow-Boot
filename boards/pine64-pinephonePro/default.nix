@@ -1,5 +1,12 @@
 { config, lib, pkgs, ... }:
 
+let
+  inherit (lib)
+    mkMerge
+    mkIf
+  ;
+  inherit (config.Tow-Boot) buildUBoot;
+in
 {
   device = {
     manufacturer = "PINE64";
@@ -27,18 +34,10 @@
         mmcEMMC = "0";
       };
     };
-    config = [
+    config = mkMerge [
+      [
       (helpers: with helpers; {
         TOW_BOOT_QUIRK_ROCKCHIP_DISABLE_DOWNLOAD_MODE = lib.mkIf (!config.Tow-Boot.buildUBoot) yes;
-      })
-      (helpers: with helpers; {
-        BUTTON_GPIO = yes;
-        BUTTON_ADC = yes;
-        LED_GPIO = yes;
-        VIBRATOR_GPIO = yes;
-      })
-      (helpers: with helpers; {
-        USB_GADGET_MANUFACTURER = freeform ''"Pine64"'';
       })
       (helpers: with helpers; {
         CMD_POWEROFF = lib.mkForce yes;
@@ -54,6 +53,15 @@
         MMC_HS400_ES_SUPPORT = yes;
         MMC_HS400_SUPPORT = yes;
       })
+      ]
+      # Requires Tow-Boot patches
+      (mkIf (!buildUBoot) [(helpers: with helpers;{
+        BUTTON_GPIO = yes;
+        BUTTON_ADC = yes;
+        LED_GPIO = yes;
+        VIBRATOR_GPIO = yes;
+        USB_GADGET_MANUFACTURER = freeform ''"Pine64"'';
+      })])
     ];
   };
   documentation.sections.installationInstructions = builtins.readFile ./INSTALLING.md;
