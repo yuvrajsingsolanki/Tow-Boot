@@ -82,12 +82,14 @@ in
           ;
         } ''
           (PS4=" $ "; set -x
-          mkdir -p $out/{binaries,config}
+          mkdir -p $out/{binaries,config,diff}
           cp -v ${raspberryPi-3.config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin $out/binaries/Tow-Boot.noenv.rpi3.bin
           cp -v ${raspberryPi-3.config.Tow-Boot.outputs.firmware}/config/noenv.config $out/config/noenv.rpi3.config
+          cp -v ${raspberryPi-3.config.Tow-Boot.outputs.firmware}/diff/noenv.build.diff $out/diff/noenv.rpi3.diff
 
           cp -v ${raspberryPi-4.config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin $out/binaries/Tow-Boot.noenv.rpi4.bin
           cp -v ${raspberryPi-4.config.Tow-Boot.outputs.firmware}/config/noenv.config $out/config/noenv.rpi4.config
+          cp -v ${raspberryPi-4.config.Tow-Boot.outputs.firmware}/diff/noenv.build.diff $out/diff/noenv.rpi4.diff
           )
         ''
       ) { }
