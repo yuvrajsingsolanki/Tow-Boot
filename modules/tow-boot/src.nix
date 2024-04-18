@@ -55,7 +55,12 @@ in
   config = {
     Tow-Boot = {
       uBootVersion = mkDefault "2023.07";
-      tag = mkDefault "tb-${uBootVersion}-${releaseNumber}${releaseRC}";
+      tag =
+        let
+          releaseNumber = "007"; # No tag yet in the split tree
+        in
+        mkDefault "tb-${uBootVersion}-${releaseNumber}${releaseRC}"
+      ;
 
       knownHashes = {
         U-Boot = {
