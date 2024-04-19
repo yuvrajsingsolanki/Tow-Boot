@@ -15,7 +15,7 @@ let
 
   evaluatedStructuredConfig = import ../../support/nix/eval-kconfig.nix rec {
     inherit lib;
-    inherit (pkgs) path;
+    inherit (pkgs) path writeShellScript;
     version = config.Tow-Boot.uBootVersion;
     structuredConfig = (config.Tow-Boot.structuredConfigHelper version);
   };
