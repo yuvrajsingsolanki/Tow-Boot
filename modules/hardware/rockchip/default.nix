@@ -14,6 +14,7 @@ let
   ;
   inherit (config.Tow-Boot)
     variant
+    uBootVersion
   ;
   cfg = config.hardware.socs;
   withSPI = config.hardware.SPISize != null;
@@ -52,10 +53,20 @@ in
             # SPI boot Support
             MTD = yes;
             DM_MTD = yes;
+            ROCKCHIP_SPI_IMAGE = mkIf (versionAtLeast uBootVersion "2022.10") yes;
             SPI_FLASH_SFDP_SUPPORT = yes;
             SPL_DM_SPI = yes;
+            SPL_SPI_FLASH_SUPPORT = yes;
+            SPL_SPI_LOAD = yes;
+            SPL_SPI = yes;
             SPL_SPI_FLASH_TINY = no;
             SPL_SPI_FLASH_SFDP_SUPPORT = yes;
+            # NOTE: Some boards may have a different value:
+            #   ~/tmp/u-boot/u-boot $ grep -l -R 'u-boot,spl-payload-offset' arch/*/dts/rk*.dts*
+            #    arch/arm/dts/rk3368-lion-haikou-u-boot.dtsi
+            #    arch/arm/dts/rk3399-gru-u-boot.dtsi
+            #    arch/arm/dts/rk3399-puma-haikou-u-boot.dtsi
+            # Not an issue currently.
             SYS_SPI_U_BOOT_OFFS = freeform ''0x80000''; # 512K
             SPL_DM_SEQ_ALIAS = yes;
           })
@@ -105,6 +116,21 @@ in
             SYSRESET_CMD_POWEROFF = yes;
           })
         ];
+        builder.postPatch =
+          # The baud rate needs to be patched out to match the `CONFIG_BAUDRATE` value,
+          # since this `chosen/stdout-path` value serves as the default if no `console=` param exists.
+          # I don't know if it's possible with the tooling of U-Boot upstream, but if it is, they should sync that.
+          ''
+            echo ':: Patching stdout baud rate in rockchip device trees'
+            (PS4=" $ "
+            for f in arch/arm/dts/*rk3*.dts*; do
+              (set -x
+              sed -i -e 's/serial2:1500000n8/serial2:115200n8/' "$f"
+              )
+            done
+            )
+          ''
+        ;
       };
     })
 

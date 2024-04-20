@@ -1,5 +1,11 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
+let
+  inherit (lib)
+    mkIf
+  ;
+  inherit (config.Tow-Boot) buildUBoot;
+in
 {
   device = {
     manufacturer = "Hardkernel";
@@ -11,7 +17,8 @@
 
   hardware = {
     soc = "amlogic-s922x";
-    SPISize = 8 * 1024 * 1024;
+    # Only enable SPI build with Tow-Boot; mainline doesn't have the patch.
+    SPISize = mkIf (!buildUBoot) (8 * 1024 * 1024);
   };
 
   Tow-Boot = {
@@ -20,7 +27,7 @@
       (helpers: with helpers; {
         USE_PREBOOT = yes;
         PREBOOT = freeform ''"usb start ; usb info"'';
-        SF_DEFAULT_SPEED = freeform ''52000000'';
+        SF_DEFAULT_SPEED = mkIf (!buildUBoot) (freeform ''52000000'');
       })
     ];
     builder.additionalArguments = {
