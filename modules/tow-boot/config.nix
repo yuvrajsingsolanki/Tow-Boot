@@ -64,6 +64,9 @@ in
         )
       ;
 
+      # Normalize baud rate across all platforms
+      BAUDRATE = freeform "115200";
+
       # And this ends up causing the menu to be used on ESCAPE (or CTRL+C)
       AUTOBOOT_USE_MENUKEY = yes;
 
