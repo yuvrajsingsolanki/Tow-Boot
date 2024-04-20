@@ -182,7 +182,7 @@ in
           hardeningDisable = [ "all" ];
 
           makeFlags = [
-            "DTC=dtc"
+            "DTC=${lib.getExe buildPackages.dtc}"
             "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
           ] ++ makeFlags;
 

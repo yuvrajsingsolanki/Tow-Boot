@@ -7,6 +7,7 @@
 let
   inherit (lib)
     escapeShellArg
+    mkForce
     mkIf
     mkMerge
     mkOption
@@ -153,6 +154,9 @@ in
   };
 
   config = mkMerge [
+    {
+      Tow-Boot.phone-ux.enable = mkIf config.Tow-Boot.buildUBoot (mkForce false);
+    }
     (mkIf (cfg.enable) {
       Tow-Boot = {
         inherit setup_leds;

@@ -1,5 +1,17 @@
 { config, lib, pkgs, ... }:
 
+let
+  inherit (lib)
+    mkForce
+    mkIf
+    versionAtLeast
+    versionOlder
+  ;
+
+  inherit (config.Tow-Boot)
+    uBootVersion
+  ;
+in
 {
   device = {
     manufacturer = "U-Boot";
@@ -26,7 +38,7 @@
         SANDBOX_RAM_SIZE_MB = freeform "512";
       })
       (helpers: with helpers; {
-        BOOTSTD = lib.mkForce yes;
+        BOOTSTD = mkIf (versionAtLeast uBootVersion "2022.07") (mkForce yes);
       })
     ];
     builder = {
