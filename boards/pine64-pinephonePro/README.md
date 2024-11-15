@@ -1,4 +1,4 @@
-# PINE64 Pinephone Pro
+computer # PINE64 Pinephone Pro
 
 ## Device-specific notes
 
